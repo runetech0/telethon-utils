@@ -1,0 +1,87 @@
+[
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Callable",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Coroutine",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "cast",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "events",
+        "importPath": "telethon",
+        "description": "telethon",
+        "isExtraImport": true,
+        "detail": "telethon",
+        "documentation": {}
+    },
+    {
+        "label": "setuptools",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "setuptools",
+        "description": "setuptools",
+        "detail": "setuptools",
+        "documentation": {}
+    },
+    {
+        "label": "query_data_starts_with",
+        "kind": 2,
+        "importPath": "telethon_utils.event_filters",
+        "description": "telethon_utils.event_filters",
+        "peekOfCode": "def query_data_starts_with(starts_with: str) -> Callable[[events.CallbackQuery.Event], Coroutine[Any, Any, bool]]:\n    async def inner(e: events.CallbackQuery.Event) -> bool:\n        return str(e.query.data.decode()).startswith(starts_with)   # pyright: ignore\n    return inner\ndef chat_message(chats_id: int) -> Callable[[events.NewMessage.Event], Coroutine[Any, Any, bool]]:\n    async def inner(e: events.NewMessage.Event) -> bool:\n        chat_id = cast(int, e.chat_id)  # pyright: ignore\n        return chat_id == chats_id\n    return inner\ndef message_from_chatslist(chat_ids: list[int]) -> Callable[[events.NewMessage.Event], Coroutine[Any, Any, bool]]:",
+        "detail": "telethon_utils.event_filters",
+        "documentation": {}
+    },
+    {
+        "label": "chat_message",
+        "kind": 2,
+        "importPath": "telethon_utils.event_filters",
+        "description": "telethon_utils.event_filters",
+        "peekOfCode": "def chat_message(chats_id: int) -> Callable[[events.NewMessage.Event], Coroutine[Any, Any, bool]]:\n    async def inner(e: events.NewMessage.Event) -> bool:\n        chat_id = cast(int, e.chat_id)  # pyright: ignore\n        return chat_id == chats_id\n    return inner\ndef message_from_chatslist(chat_ids: list[int]) -> Callable[[events.NewMessage.Event], Coroutine[Any, Any, bool]]:\n    async def inner(e: events.NewMessage.Event) -> bool:\n        chat_id = cast(int, e.chat_id)  # pyright: ignore\n        return chat_id in chat_ids\n    return inner",
+        "detail": "telethon_utils.event_filters",
+        "documentation": {}
+    },
+    {
+        "label": "message_from_chatslist",
+        "kind": 2,
+        "importPath": "telethon_utils.event_filters",
+        "description": "telethon_utils.event_filters",
+        "peekOfCode": "def message_from_chatslist(chat_ids: list[int]) -> Callable[[events.NewMessage.Event], Coroutine[Any, Any, bool]]:\n    async def inner(e: events.NewMessage.Event) -> bool:\n        chat_id = cast(int, e.chat_id)  # pyright: ignore\n        return chat_id in chat_ids\n    return inner",
+        "detail": "telethon_utils.event_filters",
+        "documentation": {}
+    },
+    {
+        "label": "required_packages",
+        "kind": 5,
+        "importPath": "setup",
+        "description": "setup",
+        "peekOfCode": "required_packages = [\n    \"aiohttp\",\n]\nsetuptools.setup(\n    name=\"telethon_utils\",\n    version=\"0.1.0\",\n    author=\"Rehman Ali\",\n    author_email=\"rehmanali.9442289@gmail.com\",\n    description=\"Some helper utils for telethon\",\n    url=\"\",",
+        "detail": "setup",
+        "documentation": {}
+    }
+]
