@@ -22,3 +22,12 @@ def message_from_chatslist(chat_ids: list[int]) -> Callable[[events.NewMessage.E
         return chat_id in chat_ids
 
     return inner
+
+
+
+def command_from_anyone(command: str) -> Callable[[events.NewMessage.Event], Coroutine[Any,Any, bool]]:
+    async def inner(e: events.NewMessage.Event) -> bool:
+        m = cast(str, e.message.message)    # pyright: ignore
+        return m.startswith(command)
+
+    return inner
