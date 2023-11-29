@@ -32,3 +32,4 @@ Output
 !requirements.txt
 *.egg-info
 .pytest_cache
+test_bot.py

@@ -1,5 +1,8 @@
 import asyncio
+
 from telethon import TelegramClient # pyright: ignore
+
+from .rich_client import RichTelegramClient # pyright: ignore
 from .types import ClientsList
 import os
 
@@ -36,17 +39,20 @@ async def get_clients(sessions_dir: str, api_id: int, api_hash: str) -> ClientsL
 
         print(f"Logging-in {phone} ...")
 
-        client = TelegramClient(
+        client = RichTelegramClient(
             s_file,
             api_id=api_id,
             api_hash=api_hash,
         )
 
         try:
-            await client.start()    # pyright: ignore
-            clients.append(client)
+            await client.connect()    # pyright: ignore
             if await client.is_user_authorized():
+                clients.append(client)
                 print(f"[{phone}] login success!")
+                await client.rich_init()
+            else:
+                print(f"[{phone}] session file not authorized!")
 
         except Exception as e:
             print(f"Failed to login {s_file}. {e}")
@@ -55,7 +61,7 @@ async def get_clients(sessions_dir: str, api_id: int, api_hash: str) -> ClientsL
 
 
 
-async def close_client(client: TelegramClient) -> None:
+async def close_client(client: RichTelegramClient | TelegramClient) -> None:
     try:
         await client.disconnect()   # pyright: ignore
         print("Client disconnected!")

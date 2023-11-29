@@ -1,5 +1,6 @@
-from telethon import TelegramClient # pyright: ignore
 from typing import TypeAlias
 
+from .rich_client import RichTelegramClient
 
-ClientsList: TypeAlias = list[TelegramClient]
+
+ClientsList: TypeAlias = list[RichTelegramClient]
