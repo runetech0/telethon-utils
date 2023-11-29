@@ -22,3 +22,6 @@ class Emojis:
     GEAR_WORKING = "⚙️"
     TELEGRAM = "🔵"
     BLACK_DOT = "⚫️"
+    ENVELOP = "✉️"
+    RECYCLE_BIN = "🗑"
+    COUNTER = "🔄"

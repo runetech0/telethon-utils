@@ -61,6 +61,8 @@ class RichTelegramClient(TelegramClient):
         await self(functions.messages.ImportChatInviteRequest(entity_slug))
 
     async def is_private_entity_link(self, link: str) -> bool:
+        if "joinchat" in link:
+            return True
         return link.split("/")[-1].replace("@", "").startswith("+")
 
     async def join_entity(self, entity_link: str) -> None:
