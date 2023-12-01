@@ -31,7 +31,7 @@ class RichTelegramClient(TelegramClient):
         """Something that can be represented on terminal"""
         if self.me:
             if self.me.username:
-                return self.me.username
+                return "@" + self.me.username
 
             if self.me.phone:
                 return self.me.phone

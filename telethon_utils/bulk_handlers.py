@@ -1,6 +1,10 @@
 import asyncio
 
-from telethon import TelegramClient # pyright: ignore
+from telethon import TelegramClient
+
+from .proxy_reader.reader import ProxiesReader
+
+from .enums import ProxyFormat, ProxyType # pyright: ignore
 
 from .rich_client import RichTelegramClient # pyright: ignore
 from .types import ClientsList
@@ -19,8 +23,19 @@ async def phones_from_sessions_dir(dir: str) -> list[str]:
     return files
 
 
-async def get_clients(sessions_dir: str, api_id: int, api_hash: str) -> ClientsList:
+
+async def get_clients(sessions_dir: str, api_id: int, api_hash: str, proxies_file: str = "proxies.txt", proxy_type: ProxyType = ProxyType.HTTP, proxy_format: ProxyFormat = ProxyFormat.IP_PORT_USER_PASS) -> ClientsList:
+    reader = ProxiesReader(file_path=proxies_file)
+    if proxy_format == ProxyFormat.IP_PORT:
+        reader.read_authless()
+
+    if proxy_format == ProxyFormat.IP_PORT_USER_PASS:
+        reader.read_with_auth()
+
+    reader.working_proxies = reader.proxies
+
     session_files = await phones_from_sessions_dir(sessions_dir)
+
     print(f"Loaded {len(session_files)} session files from {sessions_dir} ...")
 
     clients: ClientsList = []
@@ -43,6 +58,7 @@ async def get_clients(sessions_dir: str, api_id: int, api_hash: str) -> ClientsL
             s_file,
             api_id=api_id,
             api_hash=api_hash,
+            proxy=reader.next_http_telegram_from_cycle()
         )
 
         try:

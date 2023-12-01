@@ -4,6 +4,6 @@ NAME = "telethon_utils"
 
 MAJOR = "0"
 MINOR = "1"
-PATCH = "1"
+PATCH = "2"
 
 VERSION = f"{MAJOR}.{MINOR}.{PATCH}"
