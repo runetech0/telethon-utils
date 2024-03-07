@@ -25,3 +25,6 @@ class Emojis:
     ENVELOP = "✉️"
     RECYCLE_BIN = "🗑"
     COUNTER = "🔄"
+    LCD = "🖥"
+    HOME = "🏠"
+    LEFT_ARROW = "⬅️"
