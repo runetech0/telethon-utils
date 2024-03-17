@@ -1,15 +1,14 @@
+import asyncio
 from typing import Optional
-from telethon import TelegramClient # pyright: ignore
+from telethon import TelegramClient  # pyright: ignore
 from telethon import types, functions  # pyright: ignore
 
 
-
-
 class RichTelegramClient(TelegramClient):
-    
 
     me: Optional[types.User]
     phone_number: str
+    ratelimited: bool
 
     # private attrs
     _rich_init_done: bool = False
@@ -44,17 +43,23 @@ class RichTelegramClient(TelegramClient):
     def link_to_slug(self, link: str) -> str:
         return link.split("/")[-1].replace("@", "").replace("+", "")
 
-    async def check_chat_invite_link(self, link: str) -> types.ChatInviteAlready | types.ChatInvite:
-        result = await self(functions.messages.CheckChatInviteRequest(  # pyright: ignore
-            hash=self.link_to_slug(link)
-        ))
+    async def check_chat_invite_link(
+        self, link: str
+    ) -> types.ChatInviteAlready | types.ChatInvite:
+        result = await self(  # pyright:  ignore
+            functions.messages.CheckChatInviteRequest(  # pyright: ignore
+                hash=self.link_to_slug(link)
+            )
+        )
         assert isinstance(result, (types.ChatInviteAlready, types.ChatInvite))
         return result
 
     async def join_public_entity(self, entity_slug: str) -> None:
         """Join a public channel or group"""
         entity_slug = self.link_to_slug(entity_slug)
-        await self(functions.channels.JoinChannelRequest(entity_slug))  # pyright: ignore
+        await self(
+            functions.channels.JoinChannelRequest(entity_slug)  # pyright: ignore
+        )  # pyright: ignore
 
     async def join_private_entity(self, entity_slug: str) -> None:
         entity_slug = self.link_to_slug(entity_slug)
@@ -71,3 +76,12 @@ class RichTelegramClient(TelegramClient):
 
         else:
             await self.join_public_entity(entity_link)
+
+    async def ratelimit_for(self, time: int) -> None:
+        self.ratelimited = True
+
+        async def _reset_after() -> None:
+            await asyncio.sleep(time)
+            self.ratelimited = False
+
+        asyncio.create_task(_reset_after())
