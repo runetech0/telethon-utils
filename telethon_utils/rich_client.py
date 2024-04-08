@@ -1,7 +1,10 @@
 import asyncio
 from typing import Optional
 from telethon import TelegramClient  # pyright: ignore
-from telethon import types, functions  # pyright: ignore
+from telethon import types, functions
+from telethon.errors import UserAlreadyParticipantError
+
+from .errors import JoinFailed
 
 
 class RichTelegramClient(TelegramClient):
@@ -54,28 +57,65 @@ class RichTelegramClient(TelegramClient):
         assert isinstance(result, (types.ChatInviteAlready, types.ChatInvite))
         return result
 
-    async def join_public_entity(self, entity_slug: str) -> None:
+    async def join_public_entity(self, entity_slug: str) -> int:
         """Join a public channel or group"""
         entity_slug = self.link_to_slug(entity_slug)
-        await self(
+        resp: types.Updates = await self(  # pyright: ignore
             functions.channels.JoinChannelRequest(entity_slug)  # pyright: ignore
         )  # pyright: ignore
 
-    async def join_private_entity(self, entity_slug: str) -> None:
+        if resp.updates:  # pyright: ignore
+            for update in resp.updates:  # pyright: ignore
+                if isinstance(update, types.UpdateChannel):
+                    return update.channel_id
+
+        else:
+            # Updates is empty. Let's look for chats
+            for chat in resp.chats:  # pyright: ignore
+                if isinstance(chat, (types.Chat, types.Channel)):
+                    return chat.id
+
+        raise JoinFailed(f"Failed to join public entity. Telegram says: {resp}")
+
+    async def join_private_entity(self, entity_slug: str) -> int:
         entity_slug = self.link_to_slug(entity_slug)
-        await self(functions.messages.ImportChatInviteRequest(entity_slug))
+        try:
+            resp: types.Updates = await self(  # pyright: ignore
+                functions.messages.ImportChatInviteRequest(entity_slug)
+            )
+            updates: list[  # pyright: ignore
+                types.UpdateMessageID | types.UpdateChatParticipants
+            ] = resp.updates  # pyright: ignore  # pyright: ignore
+            for update in updates:  # pyright: ignore
+                if isinstance(update, types.UpdateChatParticipants):
+                    chat_id = update.participants.chat_id
+                    return chat_id
+
+                if isinstance(update, types.UpdateChannel):
+                    return update.channel_id
+
+            else:
+                raise JoinFailed(
+                    f"Failed to join private entity. Telegram says: {resp}"
+                )
+
+        except UserAlreadyParticipantError:
+            res = await self.check_chat_invite_link(entity_slug)
+            assert isinstance(
+                res, types.ChatInviteAlready
+            ), "Invalid response from chat Invite"
+            return res.chat.id
 
     async def is_private_entity_link(self, link: str) -> bool:
         if "joinchat" in link:
             return True
         return link.split("/")[-1].replace("@", "").startswith("+")
 
-    async def join_entity(self, entity_link: str) -> None:
+    async def join_entity(self, entity_link: str) -> int:
         if await self.is_private_entity_link(entity_link):
-            await self.join_private_entity(entity_link)
+            return await self.join_private_entity(entity_link)
 
-        else:
-            await self.join_public_entity(entity_link)
+        return await self.join_public_entity(entity_link)
 
     async def ratelimit_for(self, time: int) -> None:
         self.ratelimited = True
