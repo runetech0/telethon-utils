@@ -25,21 +25,21 @@ class RichTelegramClient(TelegramClient):
 
     @property
     def user_id(self) -> int:
-        assert self.me, "Client User not available"
-        return self.me.id
+        assert isinstance(self.me, types.User), "Client User not available"
+        return int(self.me.id)
 
     @property
     def repr(self) -> str:
         """Something that can be represented on terminal"""
-        if self.me:
+        if isinstance(self.me, types.User):
             if self.me.username:
-                return "@" + self.me.username
+                return "@" + str(self.me.username)
 
             if self.me.phone:
-                return self.me.phone
+                return str(self.me.phone)
 
             if self.me.first_name:
-                return self.me.first_name
+                return str(self.me.first_name)
 
         return ""
 
@@ -61,19 +61,19 @@ class RichTelegramClient(TelegramClient):
         """Join a public channel or group"""
         entity_slug = self.link_to_slug(entity_slug)
         resp: types.Updates = await self(  # pyright: ignore
-            functions.channels.JoinChannelRequest(entity_slug)  # pyright: ignore
-        )  # pyright: ignore
+            functions.channels.JoinChannelRequest(entity_slug)  # type: ignore
+        )
 
         if resp.updates:  # pyright: ignore
             for update in resp.updates:  # pyright: ignore
                 if isinstance(update, types.UpdateChannel):
-                    return update.channel_id
+                    return int(update.channel_id)
 
         else:
             # Updates is empty. Let's look for chats
             for chat in resp.chats:  # pyright: ignore
                 if isinstance(chat, (types.Chat, types.Channel)):
-                    return chat.id
+                    return int(chat.id)
 
         raise JoinFailed(f"Failed to join public entity. Telegram says: {resp}")
 
@@ -89,10 +89,10 @@ class RichTelegramClient(TelegramClient):
             for update in updates:  # pyright: ignore
                 if isinstance(update, types.UpdateChatParticipants):
                     chat_id = update.participants.chat_id
-                    return chat_id
+                    return int(chat_id)
 
                 if isinstance(update, types.UpdateChannel):
-                    return update.channel_id
+                    return int(update.channel_id)
 
             else:
                 raise JoinFailed(
@@ -104,7 +104,7 @@ class RichTelegramClient(TelegramClient):
             assert isinstance(
                 res, types.ChatInviteAlready
             ), "Invalid response from chat Invite"
-            return res.chat.id
+            return int(res.chat.id)
 
     async def is_private_entity_link(self, link: str) -> bool:
         if "joinchat" in link:

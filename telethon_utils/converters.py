@@ -1,5 +1,5 @@
-from telethon import events # pyright: ignore
-from telethon.tl.custom import Message as CustomMessage  # pyright: ignore
+from telethon import events
+from telethon.tl.custom import Message as CustomMessage
 from typing import cast
 from telethon import types
 

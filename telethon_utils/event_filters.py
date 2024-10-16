@@ -1,5 +1,5 @@
 from typing import Any, Callable, Coroutine, Optional, cast
-from telethon import events  # pyright: ignore
+from telethon import events
 from .extractors import get_user_id_from_callback_query, get_user_id_from_message_event
 
 

@@ -1,8 +1,10 @@
 import asyncio
+from typing import Optional
+from proxy_reader.protocols.reader import ProxiesReaderProtocol
 from telethon import TelegramClient
-from .proxy_reader.reader import ProxiesReader
-from .enums import ProxyFormat, ProxyType  # pyright: ignore
-from .rich_client import RichTelegramClient  # pyright: ignore
+from proxy_reader.reader import ProxiesReader
+from .enums import ProxyFormat, ProxyType
+from .rich_client import RichTelegramClient
 from .types import ClientsList
 import os
 from pathlib import Path
@@ -25,22 +27,21 @@ async def get_clients(
     sessions_dir: str,
     api_id: int,
     api_hash: str,
-    proxies_file: str = "proxies.txt",
+    proxies_reader: Optional[ProxiesReaderProtocol] = None,
     proxy_type: ProxyType = ProxyType.HTTP,
     proxy_format: ProxyFormat = ProxyFormat.IP_PORT_USER_PASS,
 ) -> ClientsList:
-    p_file = Path(proxies_file)
-    if not p_file.exists():
-        p_file.touch()
 
-    reader = ProxiesReader(file_path=proxies_file)
+    if not proxies_reader:
+        proxies_reader = ProxiesReader("proxies.txt")
+
     if proxy_format == ProxyFormat.IP_PORT:
-        reader.read_authless()
+        proxies_reader.read_authless()
 
     if proxy_format == ProxyFormat.IP_PORT_USER_PASS:
-        reader.read_with_auth()
+        proxies_reader.read_with_auth()
 
-    reader.working_proxies = reader.proxies
+    proxies_reader.working_proxies = proxies_reader.proxies
 
     session_files = await phones_from_sessions_dir(sessions_dir)
 
@@ -68,12 +69,16 @@ async def get_clients(
 
         print(f"Logging-in {phone} ...")
 
-        p = reader.next_http_telegram_from_cycle() if reader.proxies else None
+        p = (
+            proxies_reader.next_http_telegram_from_cycle()
+            if proxies_reader.proxies
+            else None
+        )
         client = RichTelegramClient(
             s_file,
             api_id=api_id,
             api_hash=api_hash,
-            proxy=p,  # pyright: ignore
+            proxy=p,
         )
 
         try:
@@ -93,7 +98,7 @@ async def get_clients(
 
 async def close_client(client: RichTelegramClient | TelegramClient) -> None:
     try:
-        await client.disconnect()  # pyright: ignore
+        await client.disconnect()  # type: ignore
         print("Client disconnected!")
 
     except ConnectionError:

@@ -56,7 +56,7 @@ class EasyConv(Conversation):
     async def get_file(self, prompt: str) -> tuple[types.MessageMediaDocument, Message]:
         await self.send_message(prompt)
         resp: Message = await self.get_response()
-        await self.check_cancel(resp.message)
+        await self.check_cancel(str(resp.message))
         if not isinstance(resp.media, types.MessageMediaDocument):
             await self.send_message(
                 "❗️ You didn't upload a valid file in the message. Please try again."

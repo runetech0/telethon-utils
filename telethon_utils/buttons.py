@@ -24,7 +24,7 @@ def extract_query_data(e: CallbackQuery.Event, remove_prefix: bool = True) -> st
     data = e.query.data.decode()
     if remove_prefix:
         return split_query(data)[-1]
-    return data
+    return str(data)
 
 
 def pack_query_data(data: list[str]) -> bytes:
