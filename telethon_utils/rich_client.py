@@ -1,14 +1,17 @@
 import asyncio
 from typing import Optional
-from telethon import TelegramClient  # pyright: ignore
-from telethon import types, functions
-from telethon.errors import UserAlreadyParticipantError
+
+from telethon import (  # type: ignore
+    TelegramClient,  # type: ignore
+    functions,
+    types,
+)
+from telethon.errors import UserAlreadyParticipantError  # type: ignore
 
 from .errors import JoinFailed
 
 
-class RichTelegramClient(TelegramClient):
-
+class RichTelegramClient(TelegramClient):  # type: ignore
     me: Optional[types.User]
     phone_number: str
     ratelimited: bool
@@ -101,9 +104,9 @@ class RichTelegramClient(TelegramClient):
 
         except UserAlreadyParticipantError:
             res = await self.check_chat_invite_link(entity_slug)
-            assert isinstance(
-                res, types.ChatInviteAlready
-            ), "Invalid response from chat Invite"
+            assert isinstance(res, types.ChatInviteAlready), (
+                "Invalid response from chat Invite"
+            )
             return int(res.chat.id)
 
     async def is_private_entity_link(self, link: str) -> bool:

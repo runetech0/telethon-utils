@@ -1,13 +1,13 @@
 import asyncio
-from typing import Optional
-from proxy_reader.protocols.reader import ProxiesReaderProtocol
-from telethon import TelegramClient
-from proxy_reader.reader import ProxiesReader
-from .enums import ProxyFormat, ProxyType
-from .rich_client import RichTelegramClient
-from .types import ClientsList
 import os
-from pathlib import Path
+from typing import Optional
+
+from proxy_reader.protocols.reader import ProxiesReaderProtocol  # type: ignore
+from proxy_reader.reader import ProxiesReader  # type: ignore
+
+from .enums import ProxyFormat, ProxyType  # type: ignore
+from .rich_client import RichTelegramClient  # type: ignore
+from .types import ClientsList  # type: ignore
 
 
 def files_in_folder(folder: str) -> list[str]:
@@ -31,7 +31,6 @@ async def get_clients(
     proxy_type: ProxyType = ProxyType.HTTP,
     proxy_format: ProxyFormat = ProxyFormat.IP_PORT_USER_PASS,
 ) -> ClientsList:
-
     if not proxies_reader:
         proxies_reader = ProxiesReader("proxies.txt")
 

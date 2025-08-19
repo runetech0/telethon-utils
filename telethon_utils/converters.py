@@ -1,15 +1,15 @@
-from telethon import events
-from telethon.tl.custom import Message as CustomMessage
 from typing import cast
-from telethon import types
+
+from telethon import events, types  # type: ignore
+from telethon.tl.custom import Message as CustomMessage  # type: ignore
 
 
 def link_to_uid(link: str) -> str:
     """
     Convert telegram link to uid
     uid is referred as a username, private channel join hash etc
-    i.e. https://t.me/rehmanali1337  -> rehmanali1337
-    i.e. @rehmanali1337 -> rehmanali1337"""
+    i.e. https://t.me/runetech  -> runetech
+    i.e. @runetech -> runetech"""
     return link.split("?")[0].split("/")[-1].replace("@", "")
 
 

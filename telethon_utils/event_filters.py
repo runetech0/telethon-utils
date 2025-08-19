@@ -1,5 +1,7 @@
 from typing import Any, Callable, Coroutine, Optional, cast
-from telethon import events
+
+from telethon import events  # type: ignore
+
 from .extractors import get_user_id_from_callback_query, get_user_id_from_message_event
 
 
@@ -54,7 +56,6 @@ def public_command(
     command: str,
 ) -> Callable[[events.NewMessage.Event], Coroutine[Any, Any, bool]]:
     async def inner(e: events.NewMessage.Event) -> bool:
-
         m = cast(str, e.message.message)  # pyright: ignore
         return m.startswith(command)
 

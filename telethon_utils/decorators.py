@@ -1,7 +1,7 @@
 import asyncio
 from typing import Callable, Coroutine, Optional, ParamSpec, TypeVar
-from telethon.errors import FloodWaitError
 
+from telethon.errors import FloodWaitError  # type: ignore
 
 P = ParamSpec("P")
 T = TypeVar("T")
